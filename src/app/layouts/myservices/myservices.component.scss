@@ -1,0 +1,106 @@
+h1 {
+  font-family: "Poppins", sans-serif;
+  font-size: 2.5rem;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+
+  span {
+    color: #0ef;
+    font-weight: bold;
+  }
+}
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Ajuste automático */
+  gap: 30px; /* Espacio entre las tarjetas */
+  padding: 5vw;
+
+  .card {
+    background: linear-gradient(135deg, #5f3ab6, #8a4fc8); /* Gradiente */
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    h2 {
+      font-size: 2rem;
+      color: #ffffff;
+      margin-bottom: 10px;
+
+      i {
+        font-size: 3rem; /* Iconos más grandes */
+        color: #0ef;
+        margin-bottom: 10px;
+      }
+    }
+
+    p {
+      font-size: 1rem;
+      line-height: 1.5;
+      margin-top: 15px;
+      color: #e4e4e4;
+    }
+  }
+}
+
+
+@keyframes slideTop{
+  0%{
+      transform: translateY(-6%, 0.3s);
+  }
+
+}
+.container {
+  .card {
+    opacity: 0;
+    transform: translateY(50px);
+    animation: fadeInUp 0.8s ease forwards;
+
+    &:nth-child(1) {
+      animation-delay: 0.2s;
+    }
+
+    &:nth-child(2) {
+      animation-delay: 0.4s;
+    }
+
+    &:nth-child(3) {
+      animation-delay: 0.6s;
+    }
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media screen and (max-width: 768px) {
+  .container {
+    grid-template-columns: 1fr; /* Una tarjeta por fila */
+    gap: 20px; /* Reducir espacio entre las tarjetas */
+  }
+
+  .card {
+    padding: 15px;
+    h2 {
+      font-size: 1.8rem;
+    }
+    p {
+      font-size: 0.9rem;
+    }
+  }
+}

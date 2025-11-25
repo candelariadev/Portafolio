@@ -1,0 +1,37 @@
+.radial-bar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  svg {
+    transform: rotate(-90deg);
+  }
+
+  .circle-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 6;
+  }
+
+  .circle-progress {
+    fill: none;
+    stroke-linecap: round;
+    stroke-width: 6;
+    transition: stroke-dashoffset 1.2s ease-in-out;
+  }
+
+  .percentage-text {
+    fill: #fff;
+    font-size: 0.6em;
+    font-weight: bold;
+  }
+
+  .skill-text {
+    margin-top: 10px;
+    font-size: 1em;
+    color: #fff;
+    text-transform: uppercase;
+    text-align: center;
+  }
+}

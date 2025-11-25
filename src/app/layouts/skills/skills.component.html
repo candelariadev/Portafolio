@@ -1,0 +1,29 @@
+<div id="skills" class="skills-container">
+  <h1>My Skills</h1>
+  <div class="radial-skills">
+    <h2>Soft Skills</h2>
+    <div class="radial-bars">
+      <app-circular-progress-bar
+        *ngFor="let skill of radialSkills"
+        [progress]="skill.progress"
+        [skill]="skill.name"
+        [color]="skill.color"
+        [size]="skill.size"
+        [strokeWidth]="skill.strokeWidth"
+      ></app-circular-progress-bar>
+    </div>
+  </div>
+
+  <div class="bar-skills">
+    <h2>Technical Skills</h2>
+    <div class="skills-bars">
+      <app-progress-bar
+        *ngFor="let skill of barSkills"
+        [skill]="skill.name"
+        [progress]="skill.progress"
+        [color]="skill.color"
+        [backgroundColor]="skill.backgroundColor"
+      ></app-progress-bar>
+    </div>
+  </div>
+</div>
