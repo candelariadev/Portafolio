@@ -97,7 +97,7 @@ export class SkillsComponent implements OnInit, OnDestroy {
         }
       );
 
-      // Observar el elemento ski
+      // Observar el elemento skills
       this.observer.observe(this.elementRef.nativeElement);
     }
   }
