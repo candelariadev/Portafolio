@@ -9,7 +9,7 @@ import { isPlatformBrowser } from '@angular/common';
 export class NavbarComponent implements OnInit {
 
   constructor(
-    private renderer: Renderer2, 
+    private renderer: Renderer2,
     private el: ElementRef,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
@@ -24,13 +24,13 @@ export class NavbarComponent implements OnInit {
 
     // Efecto de scroll en el navbar
     const navbar = this.el.nativeElement.querySelector('.navbar-container');
-    if (typeof window !== 'undefined' && window.scrollY > 50) {
+    if (typeof globalThis.window !== 'undefined' && window.scrollY > 50) {
       this.renderer.addClass(navbar, 'scrolled');
     } else {
       this.renderer.removeClass(navbar, 'scrolled');
     }
 
-    // Buscar secciones en todo el documento, no solo en el elemento navbar
+    // Buscar secciones en  el documento, no solo en el elemento navbar
     const sections = document.querySelectorAll('#home, #about, #services, #skills, #projects, #contact');
     const navLinks = this.el.nativeElement.querySelectorAll('ul li a');
 
@@ -74,7 +74,7 @@ export class NavbarComponent implements OnInit {
   // Función para hacer scroll suave al hacer clic en un enlace
   scrollToSection(event: Event, sectionId: string) {
     event.preventDefault();
-    
+
     // Solo ejecutar en el navegador
     if (!isPlatformBrowser(this.platformId)) {
       return;
@@ -100,7 +100,7 @@ export class NavbarComponent implements OnInit {
   toggleMenu() {
     const nav = this.el.nativeElement.querySelector('ul');
     const menuToggle = this.el.nativeElement.querySelector('.menu-toggle');
-    
+
     if (nav && menuToggle) {
       if (nav.classList.contains('active')) {
         this.renderer.removeClass(nav, 'active');
@@ -116,7 +116,7 @@ export class NavbarComponent implements OnInit {
   closeMenu() {
     const nav = this.el.nativeElement.querySelector('ul');
     const menuToggle = this.el.nativeElement.querySelector('.menu-toggle');
-    
+
     if (nav && nav.classList.contains('active')) {
       this.renderer.removeClass(nav, 'active');
       this.renderer.removeClass(menuToggle, 'active');
