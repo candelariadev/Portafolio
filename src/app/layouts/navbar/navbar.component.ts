@@ -2,9 +2,10 @@ import { Component, HostListener, OnInit, Renderer2, ElementRef, Inject, PLATFOR
 import { isPlatformBrowser } from '@angular/common';
 
 @Component({
-  selector: 'app-navbar',
-  templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.scss']
+    selector: 'app-navbar',
+    templateUrl: './navbar.component.html',
+    styleUrls: ['./navbar.component.scss'],
+    standalone: false
 })
 export class NavbarComponent implements OnInit {
 

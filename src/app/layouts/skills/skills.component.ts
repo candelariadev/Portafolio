@@ -4,9 +4,10 @@ import { ProgressBarComponent } from '../../components/progress-bar/progress-bar
 import { CircularProgressBarComponent } from '../../components/circular-progress-bar/circular-progress-bar.component';
 
 @Component({
-  selector: 'app-skills',
-  templateUrl: './skills.component.html',
-  styleUrls: ['./skills.component.scss']
+    selector: 'app-skills',
+    templateUrl: './skills.component.html',
+    styleUrls: ['./skills.component.scss'],
+    standalone: false
 })
 export class SkillsComponent implements OnInit, OnDestroy {
   @ViewChildren(ProgressBarComponent) progressBars!: QueryList<ProgressBarComponent>;
