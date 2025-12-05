@@ -1,9 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-circular-progress-bar',
-  templateUrl: './circular-progress-bar.component.html',
-  styleUrls: ['./circular-progress-bar.component.scss']
+    selector: 'app-circular-progress-bar',
+    templateUrl: './circular-progress-bar.component.html',
+    styleUrls: ['./circular-progress-bar.component.scss'],
+    standalone: false
 })
 export class CircularProgressBarComponent implements OnInit {
   @Input() progress: number = 0;

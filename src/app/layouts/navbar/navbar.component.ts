@@ -1,155 +1,100 @@
-import { Component, HostListener, OnInit, Renderer2, ElementRef, Inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import {
+  Component,
+  ElementRef,
+  Renderer2,
+  signal,
+  viewChild
+} from '@angular/core';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { inject } from '@angular/core';
 
 @Component({
   selector: 'app-navbar',
+  standalone: true,
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent {
 
-  constructor(
-    private renderer: Renderer2, 
-    private el: ElementRef,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  // Dependencias modernas con inject()
+  private renderer = inject(Renderer2);
+  private el = inject(ElementRef);
+  private doc = inject(DOCUMENT);
 
-  // Detecta el scroll y actualiza las clases activas
-  @HostListener('window:scroll', ['$event'])
-  onWindowScroll() {
-    // Solo ejecutar en el navegador
-    if (!isPlatformBrowser(this.platformId)) {
-      return;
+  // Signals para estado reactivo
+  scrolled = signal(false);
+  activeSection = signal<string>('');
+  menuOpen = signal(false);
+
+  // ViewChild para referencia al navbar
+  navbar = viewChild('navbarRef');
+
+  sectionObserver!: IntersectionObserver;
+
+  constructor() {
+    if (this.isBrowser()) {
+      this.initializeScrollListener();
+      this.initializeSectionObserver();
     }
+  }
 
-    // Efecto de scroll en el navbar
-    const navbar = this.el.nativeElement.querySelector('.navbar-container');
-    if (typeof window !== 'undefined' && window.scrollY > 50) {
-      this.renderer.addClass(navbar, 'scrolled');
-    } else {
-      this.renderer.removeClass(navbar, 'scrolled');
-    }
-
-    // Buscar secciones en todo el documento, no solo en el elemento navbar
-    const sections = document.querySelectorAll('#home, #about, #services, #skills, #projects, #contact');
-    const navLinks = this.el.nativeElement.querySelectorAll('ul li a');
-
-    let currentSectionId = '';
-    let maxVisibleArea = 0;
-
-    sections.forEach((section: Element) => {
-      const htmlSection = section as HTMLElement;
-      const rect = htmlSection.getBoundingClientRect();
-      const sectionTop = rect.top;
-      const sectionBottom = rect.bottom;
-      const viewportHeight = window.innerHeight;
-
-      // Calcular qué tanto de la sección es visible
-      const visibleTop = Math.max(0, -sectionTop);
-      const visibleBottom = Math.min(viewportHeight, sectionBottom);
-      const visibleHeight = Math.max(0, visibleBottom - visibleTop);
-
-      // Si una parte significativa de la sección es visible
-      if (visibleHeight > 100 && visibleHeight > maxVisibleArea) {
-        maxVisibleArea = visibleHeight;
-        currentSectionId = htmlSection.id;
-      }
-
-      // Si estamos cerca del top de la sección, también la consideramos activa
-      if (sectionTop <= 100 && sectionTop >= -100) {
-        currentSectionId = htmlSection.id;
-      }
-    });
-
-    // Actualizar clases activas
-    navLinks.forEach((link: HTMLElement) => {
-      this.renderer.removeClass(link, 'active');
-      const href = link.getAttribute('href');
-      if (href && currentSectionId && href === `#${currentSectionId}`) {
-        this.renderer.addClass(link, 'active');
-      }
+  // ================================
+  // DETECTAR SCROLL EN NAVBAR
+  // ================================
+  private initializeScrollListener() {
+    this.doc.defaultView?.addEventListener('scroll', () => {
+      const y = this.doc.defaultView?.scrollY ?? 0;
+      this.scrolled.set(y > 50);
     });
   }
 
-  // Función para hacer scroll suave al hacer clic en un enlace
-  scrollToSection(event: Event, sectionId: string) {
-    event.preventDefault();
-    
-    // Solo ejecutar en el navegador
-    if (!isPlatformBrowser(this.platformId)) {
-      return;
-    }
+  // ================================
+  // OBSERVAR SECCIONES VISIBLES
+  // ================================
+  private initializeSectionObserver() {
+    const options = { threshold: 0.5 }; // 50% visible
 
-    const section = document.querySelector(sectionId);
-    if (section && typeof window !== 'undefined') {
-      const navbarHeight = 70; // Altura del navbar fijo
-      const elementPosition = section.getBoundingClientRect().top + window.pageYOffset;
-      const offsetPosition = elementPosition - navbarHeight;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
-    }
-
-    // Cerrar menú móvil si está abierto
-    this.closeMenu();
-  }
-
-  // Alterna el menú móvil
-  toggleMenu() {
-    const nav = this.el.nativeElement.querySelector('ul');
-    const menuToggle = this.el.nativeElement.querySelector('.menu-toggle');
-    
-    if (nav && menuToggle) {
-      if (nav.classList.contains('active')) {
-        this.renderer.removeClass(nav, 'active');
-        this.renderer.removeClass(menuToggle, 'active');
-      } else {
-        this.renderer.addClass(nav, 'active');
-        this.renderer.addClass(menuToggle, 'active');
-      }
-    }
-  }
-
-  // Cerrar menú móvil
-  closeMenu() {
-    const nav = this.el.nativeElement.querySelector('ul');
-    const menuToggle = this.el.nativeElement.querySelector('.menu-toggle');
-    
-    if (nav && nav.classList.contains('active')) {
-      this.renderer.removeClass(nav, 'active');
-      this.renderer.removeClass(menuToggle, 'active');
-    }
-  }
-
-  ngOnInit() {
-    // Solo ejecutar en el navegador
-    if (!isPlatformBrowser(this.platformId)) {
-      return;
-    }
-
-    const menuToggle = this.el.nativeElement.querySelector('#menu-toggle');
-    if (menuToggle) {
-      this.renderer.listen(menuToggle, 'click', () => {
-        this.toggleMenu();
-      });
-    }
-
-    // Agregar event listeners a los enlaces del navbar
-    const navLinks = this.el.nativeElement.querySelectorAll('ul li a');
-    navLinks.forEach((link: HTMLElement) => {
-      this.renderer.listen(link, 'click', (event: Event) => {
-        const href = link.getAttribute('href');
-        if (href && href.startsWith('#')) {
-          this.scrollToSection(event, href);
+    this.sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          this.activeSection.set(entry.target.id);
         }
       });
-    });
+    }, options);
 
-    // Ejecutar detección inicial
-    setTimeout(() => {
-      this.onWindowScroll();
-    }, 100);
+    const sections = this.doc.querySelectorAll('section[id], div[id]');
+    sections.forEach((sec) => this.sectionObserver.observe(sec));
+  }
+
+  // ================================
+  // SCROLL SUAVE HACIA SECCIÓN
+  // ================================
+  scrollTo(event: Event, sectionId: string) {
+    event.preventDefault();
+    if (!this.isBrowser()) return;
+
+    const id = sectionId.replace('#', '');
+    const section = this.doc.getElementById(id);
+
+    section?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    this.menuOpen.set(false);
+  }
+
+  // ================================
+  // CONTROL DEL MENÚ MÓVIL
+  // ================================
+  toggleMenu() {
+    this.menuOpen.update((open) => !open);
+  }
+
+  closeMenu() {
+    this.menuOpen.set(false);
+  }
+
+  // ================================
+  // SSR SAFE CHECK
+  // ================================
+  private isBrowser() {
+    return typeof window !== 'undefined';
   }
 }
