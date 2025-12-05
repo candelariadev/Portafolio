@@ -95,10 +95,26 @@ img{
   border-radius: 50%;
 
 }
-
-
 }
 
+@media (min-width:360px) and (max-width: 870px ) {
+  .container{
+    padding: 25vw 10vw;
+
+    img{
+      width: 35vw;
+    }
+  }
+}
+
+@media (min-width:900px) and (max-width: 1290px){
+  .container{
+    padding: 18vw 10vw;
+    img{
+      width: 30vw;
+    }
+  }
+}
 
 @keyframes slideTop{
   0%{
